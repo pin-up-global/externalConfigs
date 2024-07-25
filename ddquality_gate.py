@@ -9,6 +9,7 @@ import os
 
 def sum_severity(findings):
     severity = [0, 0, 0, 0]  # Critical, High, Medium, Low
+    print (findings)
     for finding in findings:
         if finding["severity"] == "Critical":
             severity[0] += 1
@@ -28,13 +29,13 @@ def quality_gate(severity, critical=0, high=0, medium=0, low=0):
             health = False
     print(f"Critical: {severity[0]} High: {severity[1]} Medium: {severity[2]} Low: {severity[3]}")
     print(f"Quality Gate Status: {'Success' if health else 'Failed'}")
-  #  sys.exit(0 if health else 1)
-    sys.exit(2)
+    sys.exit(0 if health else 1)
 
 def get_tests(engagement_id):
     test_rq = host + 'api/v2/tests/'
-    payload = {'engagement': engagement_id, 'limit': 1000}
+    payload = {'engagement': engagement_id, 'o': '-updated', 'limit': 1000}
     request = requests.get(test_rq, params=payload, headers=headers)
+    print ([test['id'] for test in request.json()['results']])
     return [test['id'] for test in request.json()['results']]
 
 def get_findings(test_id):
@@ -83,5 +84,5 @@ if __name__ == "__main__":
     all_findings = []
     for test_id in test_ids:
         all_findings.extend(get_findings(test_id))
-    severity = sum_severity(get_findings(engagement_id))
+    severity = sum_severity(all_findings)
     quality_gate(severity, critical, high, medium, low)
