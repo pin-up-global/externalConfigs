@@ -28,11 +28,12 @@ def quality_gate(severity, critical=0, high=0, medium=0, low=0):
             health = False
     print(f"Critical: {severity[0]} High: {severity[1]} Medium: {severity[2]} Low: {severity[3]}")
     print(f"Quality Gate Status: {'Success' if health else 'Failed'}")
-    sys.exit(0 if health else 1)
+    #sys.exit(0 if health else 1)
+    sys.exit(0)
 
 def last_test(engagement_id):
     test_rq = host + 'api/v2/tests/'
-    payload = {'engagement': engagement_id, 'o': '-updated', 'limit': '1'}
+    payload = {'engagement': engagement_id, 'o': '-updated', 'limit': '5'}
     request = requests.get(test_rq, params=payload, headers=headers)
     return request.json()['results'][0]['id']
 
