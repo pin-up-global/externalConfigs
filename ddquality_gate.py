@@ -9,7 +9,6 @@ import os
 
 def sum_severity(findings):
     severity = [0, 0, 0, 0]  # Critical, High, Medium, Low
-    print (findings)
     for finding in findings:
         if finding["severity"] == "Critical":
             severity[0] += 1
@@ -29,7 +28,7 @@ def quality_gate(severity, critical=0, high=0, medium=0, low=0):
             health = False
     print(f"Critical: {severity[0]} High: {severity[1]} Medium: {severity[2]} Low: {severity[3]}")
     print(f"Quality Gate Status: {'Success' if health else 'Failed'}")
-    sys.exit(0 if health else 1)
+    sys.exit(2)
 
 def get_tests(engagement_id):
     test_rq = host + 'api/v2/tests/'
