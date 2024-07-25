@@ -80,14 +80,13 @@ if __name__ == "__main__":
     low = args.low
     token = args.token
     host = args.host
-
+    test_ids = get_tests(engagement_id)
     all_findings = []
     for test_id in test_ids:
         all_findings.extend(get_findings(test_id))
 
 
     headers = {'Authorization': 'Token ' + token, 'accept': 'application/json'}
-    test_ids = get_tests(engagement_id)
     engagement_id = get_engagement_id_by_name(engagement_name)
     severity = sum_severity(findings(engagement_id))
     quality_gate(severity, critical, high, medium, low)
