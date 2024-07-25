@@ -31,11 +31,17 @@ def quality_gate(severity, critical=0, high=0, medium=0, low=0):
     #sys.exit(0 if health else 1)
     sys.exit(2)
 
-def last_test(engagement_id):
+#def last_test(engagement_id):
+#    test_rq = host + 'api/v2/tests/'
+#    payload = {'engagement': engagement_id, 'o': '-updated', 'limit': '5'}
+#    request = requests.get(test_rq, params=payload, headers=headers)
+#    return request.json()['results'][0]['id']
+
+def get_tests(engagement_id):
     test_rq = host + 'api/v2/tests/'
-    payload = {'engagement': engagement_id, 'o': '-updated', 'limit': '5'}
+    payload = {'engagement': engagement_id, 'limit': 1000}
     request = requests.get(test_rq, params=payload, headers=headers)
-    return request.json()['results'][0]['id']
+    return [test['id'] for test in request.json()['results']]
 
 def findings(engagement_id):
     findings_rq = host + 'api/v2/findings/'
@@ -54,6 +60,7 @@ def get_engagement_id_by_name(engagement_name):
         sys.exit(1)
     
     return engagements[0]['id']
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='DefectDojo report uploader')
@@ -74,7 +81,13 @@ if __name__ == "__main__":
     token = args.token
     host = args.host
 
+    all_findings = []
+    for test_id in test_ids:
+        all_findings.extend(get_findings(test_id))
+
+
     headers = {'Authorization': 'Token ' + token, 'accept': 'application/json'}
+    test_ids = get_tests(engagement_id)
     engagement_id = get_engagement_id_by_name(engagement_name)
     severity = sum_severity(findings(engagement_id))
     quality_gate(severity, critical, high, medium, low)
