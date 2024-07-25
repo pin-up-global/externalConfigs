@@ -28,14 +28,7 @@ def quality_gate(severity, critical=0, high=0, medium=0, low=0):
             health = False
     print(f"Critical: {severity[0]} High: {severity[1]} Medium: {severity[2]} Low: {severity[3]}")
     print(f"Quality Gate Status: {'Success' if health else 'Failed'}")
-    #sys.exit(0 if health else 1)
-    sys.exit(2)
-
-#def last_test(engagement_id):
-#    test_rq = host + 'api/v2/tests/'
-#    payload = {'engagement': engagement_id, 'o': '-updated', 'limit': '5'}
-#    request = requests.get(test_rq, params=payload, headers=headers)
-#    return request.json()['results'][0]['id']
+    sys.exit(0 if health else 1)
 
 def get_tests(engagement_id):
     test_rq = host + 'api/v2/tests/'
@@ -43,9 +36,9 @@ def get_tests(engagement_id):
     request = requests.get(test_rq, params=payload, headers=headers)
     return [test['id'] for test in request.json()['results']]
 
-def findings(engagement_id):
+def get_findings(test_id):
     findings_rq = host + 'api/v2/findings/'
-    payload = {'test': last_test(engagement_id), 'false_p': 'false', 'limit': 10000000}
+    payload = {'test': test_id, 'false_p': 'false', 'limit': 10000000}
     request = requests.get(findings_rq, params=payload, headers=headers)
     return request.json()['results']
 
@@ -80,13 +73,14 @@ if __name__ == "__main__":
     low = args.low
     token = args.token
     host = args.host
-    test_ids = get_tests(engagement_id)
-    all_findings = []
-    for test_id in test_ids:
-        all_findings.extend(get_findings(test_id))
+ 
 
 
     headers = {'Authorization': 'Token ' + token, 'accept': 'application/json'}
     engagement_id = get_engagement_id_by_name(engagement_name)
-    severity = sum_severity(findings(engagement_id))
+    test_ids = get_tests(engagement_id)
+    all_findings = []
+    for test_id in test_ids:
+        all_findings.extend(get_findings(test_id))
+    severity = sum_severity(get_findings(engagement_id))
     quality_gate(severity, critical, high, medium, low)
