@@ -5,6 +5,8 @@ import os
 
 
 
+
+
 def sum_severity(findings):
     severity = [0, 0, 0, 0]  # Critical, High, Medium, Low
     for finding in findings:
@@ -40,9 +42,21 @@ def findings(engagement_id):
     request = requests.get(findings_rq, params=payload, headers=headers)
     return request.json()['results']
 
+def get_engagement_id_by_name(engagement_name):
+    engagements_rq = host + 'api/v2/engagements/'
+    payload = {'name': engagement_name}
+    request = requests.get(engagements_rq, params=payload, headers=headers)
+    engagements = request.json()['results']
+    
+    if not engagements:
+        print(f"No engagement found with name: {engagement_name}")
+        sys.exit(1)
+    
+    return engagements[0]['id']
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='DefectDojo report uploader')
-    parser.add_argument('--engagement', help="Engagement ID", required=True)
+    parser.add_argument('--engagement', help="Engagement name", required=True)
     parser.add_argument('--critical', help="Quality Gate Critical Warnings Level", type=int, default=0, required=False)
     parser.add_argument('--high', help="Quality Gate High Warnings Level", type=int, default=0, required=False)
     parser.add_argument('--medium', help="Quality Gate Medium Warnings Level", type=int, default=0, required=False)
@@ -50,9 +64,8 @@ if __name__ == "__main__":
     parser.add_argument('--token', help="API Token", required=True)
     parser.add_argument('--host', help="DOJO host", required=True)
     
-
     args = parser.parse_args()
-    engagement_id = args.engagement
+    engagement_name = args.engagement
     critical = args.critical
     high = args.high
     medium = args.medium
@@ -60,8 +73,7 @@ if __name__ == "__main__":
     token = args.token
     host = args.host
 
-
     headers = {'Authorization': 'Token ' + token, 'accept': 'application/json'}
-    
+    engagement_id = get_engagement_id_by_name(engagement_name)
     severity = sum_severity(findings(engagement_id))
     quality_gate(severity, critical, high, medium, low)
