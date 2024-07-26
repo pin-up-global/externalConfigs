@@ -39,7 +39,7 @@ def get_tests(engagement_id):
 
 def get_findings(test_id):
     findings_rq = host + 'api/v2/findings/'
-    payload = {'test': test_id, 'false_p': 'false', 'limit': 10000000}
+    payload = {'test': test_id, 'false_p': 'false', 'limit': 10000000, 'is_mitigated': 'false'}
     request = requests.get(findings_rq, params=payload, headers=headers)
     return request.json()['results']
 
