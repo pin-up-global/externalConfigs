@@ -25,7 +25,7 @@ def quality_gate(severity, critical=0, high=0, medium=0, low=0):
         if severity[i] > int(gateway[i]):
             health = False
     print(f"Critical: {severity[0]} High: {severity[1]} Medium: {severity[2]} Low: {severity[3]}")
-    print(f"Quality Gate Status: {'Success' if health else '\033[91mFailed\033[0m'}")
+    print(f"Quality Gate Status: {'Success' if health else '\033[91m' + 'Failed' + '\033[0m'}")
     print(f"Detail DefectDojo Engagement Link: {host}engagement/{engagement_id}")
     if not health:
         send_slack_notification(f"Quality Gate Failed: {engagement_name} Get detail {host}engagement/{engagement_id}")
