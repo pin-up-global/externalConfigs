@@ -4,11 +4,9 @@ import argparse
 import os
 
 
-
-
-
 def sum_severity(findings):
     severity = [0, 0, 0, 0]  # Critical, High, Medium, Low
+    print (findings)
     for finding in findings:
         if finding["severity"] == "Critical":
             severity[0] += 1
@@ -27,8 +25,21 @@ def quality_gate(severity, critical=0, high=0, medium=0, low=0):
         if severity[i] > int(gateway[i]):
             health = False
     print(f"Critical: {severity[0]} High: {severity[1]} Medium: {severity[2]} Low: {severity[3]}")
-    print(f"Quality Gate Status: {'Success' if health else 'Failed'}")
+    print(f"Quality Gate Status: {'Success' if health else '\033[91mFailed\033[0m'}")
+    print(f"Detail DefectDojo Engagement Link: {host}engagement/{engagement_id}")
+    if not health:
+        send_slack_notification(f"Quality Gate Failed: {engagement_name} Get detail {host}engagement/{engagement_id}")
     sys.exit(0 if health else 1)
+
+def send_slack_notification(message):
+    payload = {'text': message}
+    try:
+        response = requests.post(slack, json=payload)
+        response.raise_for_status()
+        print("Slack notification sent successfully.")
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to send Slack notification: {e}")
+
 
 def get_tests(engagement_id):
     test_rq = host + 'api/v2/tests/'
@@ -65,6 +76,7 @@ if __name__ == "__main__":
     parser.add_argument('--low', help="Quality Gate Low Warnings Level", type=int, default=0, required=False)
     parser.add_argument('--token', help="API Token", required=True)
     parser.add_argument('--host', help="DOJO host", required=True)
+    parser.add_argument('--slack', help="Slack Token", required=True)
     
     args = parser.parse_args()
     engagement_name = args.engagement
@@ -73,6 +85,7 @@ if __name__ == "__main__":
     medium = args.medium
     low = args.low
     token = args.token
+    slack = args.slack
     host = args.host
  
 
