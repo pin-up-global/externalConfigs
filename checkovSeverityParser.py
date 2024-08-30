@@ -12,7 +12,7 @@ def update_error_levels_to_note(file_path):
         if isinstance(obj, dict):
             for key, value in obj.items():
                 if key == 'level' and value == 'error':
-                    obj[key] = 'note'
+                    obj[key] = 'warning'
                 elif isinstance(value, (dict, list)):
                     update_levels(value)
         elif isinstance(obj, list):
