@@ -44,7 +44,7 @@ def send_slack_notification(message):
 def get_tests(engagement_id):
     test_rq = host + 'api/v2/tests/'
     payload = {'engagement': engagement_id, 'o': '-updated', 'limit': 1000}
-    request = requests.get(test_rq, params=payload, headers=headers))
+    request = requests.get(test_rq, params=payload, headers=headers)
     print ([test['id'] for test in request.json()['results']])
     return [test['id'] for test in request.json()['results']]
 
