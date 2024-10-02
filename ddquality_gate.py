@@ -35,7 +35,6 @@ def send_slack_notification(message):
     payload = {'text': message}
     try:
         response = requests.post(slack, json=payload)
-        print(response.text)
         response.raise_for_status()
         print("Slack notification sent successfully.")
     except requests.exceptions.RequestException as e:
@@ -45,8 +44,7 @@ def send_slack_notification(message):
 def get_tests(engagement_id):
     test_rq = host + 'api/v2/tests/'
     payload = {'engagement': engagement_id, 'o': '-updated', 'limit': 1000}
-    request = requests.get(test_rq, params=payload, headers=headers)
-    print(request.text)
+    request = requests.get(test_rq, params=payload, headers=headers))
     print ([test['id'] for test in request.json()['results']])
     return [test['id'] for test in request.json()['results']]
 
@@ -54,14 +52,12 @@ def get_findings(test_id):
     findings_rq = host + 'api/v2/findings/'
     payload = {'test': test_id, 'false_p': 'false', 'limit': 10000000, 'is_mitigated': 'false'}
     request = requests.get(findings_rq, params=payload, headers=headers)
-    print(request.text)
     return request.json()['results']
 
 def get_engagement_id_by_name(engagement_name):
     engagements_rq = host + 'api/v2/engagements/'
     payload = {'name': engagement_name}
     request = requests.get(engagements_rq, params=payload, headers=headers)
-    print(request.text)
     engagements = request.json()['results']
     
     if not engagements:
